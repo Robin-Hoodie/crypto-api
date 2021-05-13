@@ -1,6 +1,6 @@
 import express from "express";
 import cron, { ScheduledTask } from "node-cron";
-import { SERVER_PORT } from "./config";
+import { SERVER_PORT, UPDATE_MARKET_PRICES_INTERVAL } from "./config";
 import {
   getLatestMarketPrices,
   getSupportedCoins,
@@ -46,8 +46,7 @@ app.post("/market-prices/start-sync", async (req, res) => {
     });
     return;
   }
-  const everyFiveMinutes = "*/5 * * * *";
-  syncTask = cron.schedule(everyFiveMinutes, async () => {
+  syncTask = cron.schedule(UPDATE_MARKET_PRICES_INTERVAL, async () => {
     await updateMarketPrices();
   });
   res.send({
