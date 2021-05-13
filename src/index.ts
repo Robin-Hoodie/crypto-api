@@ -1,6 +1,6 @@
 import express from "express";
 import cron, { ScheduledTask } from "node-cron";
-import { SERVER_HOSTNAME, SERVER_PORT } from "./config";
+import { SERVER_PORT } from "./config";
 import {
   getLatestMarketPrices,
   getSupportedCoins,
@@ -13,6 +13,8 @@ const app = express();
 app.use(express.json());
 
 let syncTask: ScheduledTask | null = null;
+
+app.get("/ping", (_, res) => res.send("pong"));
 
 app.get("/market-prices", async (req, res) => {
   const marketPrices = await getLatestMarketPrices();
@@ -67,6 +69,6 @@ app.post("/market-prices/stop-sync", async (req, res) => {
   });
 });
 
-app.listen(SERVER_PORT, SERVER_HOSTNAME, () =>
-  console.log(`Started Crypto API on port ${SERVER_PORT} and host ${SERVER_HOSTNAME}`)
+app.listen(SERVER_PORT, () =>
+  console.log(`Started Crypto API on port ${SERVER_PORT}`)
 );
