@@ -11,8 +11,8 @@
     "node": "^16.1.0"
   },
   "scripts": {
-    "dev": "nodemon --config nodemon.json src/index.ts",
-    "dev:debug": "nodemon --config nodemon.json --inspect-brk src/index.ts",
+    "dev": "./scripts/dev.sh",
+    "serve": "node dist/index.js",
     "build": "tsc",
     "format": "prettier --write ."
   },
