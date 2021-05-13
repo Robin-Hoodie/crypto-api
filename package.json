@@ -1,0 +1,38 @@
+{
+  "name": "io.oreon.crypto-api",
+  "version": "1.0.0",
+  "description": "API to provide crypto data to Google Sheets",
+  "main": "index.ts",
+  "repository": "https://github.com/Robin-Hoodie/crypto-api",
+  "author": "Robin Hellemans",
+  "license": "MIT",
+  "private": true,
+  "engines": {
+    "node": "^16.1.0"
+  },
+  "scripts": {
+    "dev": "nodemon --config nodemon.json src/index.ts",
+    "dev:debug": "nodemon --config nodemon.json --inspect-brk src/index.ts",
+    "build": "tsc",
+    "format": "prettier --write ."
+  },
+  "dependencies": {
+    "axios": "^0.21.1",
+    "date-fns": "^2.21.3",
+    "dotenv": "^9.0.2",
+    "express": "^4.17.1",
+    "mongodb": "^3.6.6",
+    "node-cron": "^3.0.0"
+  },
+  "devDependencies": {
+    "@tsconfig/node16": "^1.0.1",
+    "@types/express": "^4.17.11",
+    "@types/mongodb": "^3.6.12",
+    "@types/node": "^15.0.2",
+    "@types/node-cron": "^2.0.3",
+    "nodemon": "^2.0.7",
+    "prettier": "^2.3.0",
+    "ts-node": "^9.1.1",
+    "typescript": "^4.2.4"
+  }
+}
