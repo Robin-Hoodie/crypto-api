@@ -1,6 +1,8 @@
 import dotenv from "dotenv";
 
-dotenv.config();
+if (process.env.NODE_ENV === "development") {
+  dotenv.config();
+}
 
 export const API_KEYS_WHITELIST = process.env.API_KEYS_ALLOWED?.split(",");
 export const MONGODB_ADMIN_USER = process.env.MONGODB_ADMIN_USER;
