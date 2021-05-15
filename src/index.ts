@@ -1,6 +1,10 @@
 import express from "express";
 import cron, { ScheduledTask } from "node-cron";
-import { SERVER_PORT, UPDATE_MARKET_PRICES_INTERVAL } from "./config";
+import {
+  API_KEYS_WHITELIST,
+  SERVER_PORT,
+  UPDATE_MARKET_PRICES_INTERVAL,
+} from "./config";
 import {
   getLatestMarketPrices,
   getMarketPriceChangesTwentyFourHours,
@@ -11,11 +15,22 @@ import {
 import type { CoinId } from "./types";
 
 const app = express();
-app.use(express.json());
-
 let syncTask: ScheduledTask | null = null;
 
+app.use(express.json());
+
 app.get("/ping", (_, res) => res.send("pong"));
+
+app.use((req, res, next) => {
+  const apiKey = req.header("X-API-KEY");
+  if (!apiKey) {
+    throw new Error("No API key was set!");
+  }
+  if (!API_KEYS_WHITELIST?.includes(apiKey)) {
+    throw new Error(`API key ${apiKey} is invalid!`);
+  }
+  next();
+});
 
 app.get("/market-prices", async (req, res) => {
   const marketPrices = await getLatestMarketPrices();
