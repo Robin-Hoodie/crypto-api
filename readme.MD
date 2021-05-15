@@ -19,3 +19,9 @@ Kill mongod process `kill -2 ${pid}`
 ## Set up MongoDB security
 
 See https://docs.mongodb.com/manual/tutorial/enable-authentication/
+
+## Compute Engine
+
+- The process is run via Supervisor
+- The application is run as the "nodeapp" user
+- See https://cloud.google.com/nodejs/getting-started/getting-started-on-compute-engine for more info

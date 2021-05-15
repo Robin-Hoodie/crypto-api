@@ -1,4 +1,4 @@
-import { format } from "date-fns";
+import { format, subHours } from "date-fns";
 import { fetchMarketPricesCurrent } from "../coingecko.api";
 import {
   findMarketPricesLatest,
@@ -6,8 +6,16 @@ import {
   insertMarketPrices,
   insertSupportedCoins,
   deleteSupportedCoins,
+  countSupportedCoins,
+  findMarketPricesBetweenDatesWithLimitSortedByDateDesc,
+  deleteHistoricalPricesForCoins,
 } from "../db";
-import type { CoinId, CoinWithPrice, CoinsSyncedResponse } from "../types";
+import type {
+  CoinId,
+  CoinWithPrice,
+  CoinsSyncedResponse,
+  CoinWithChange,
+} from "../types";
 
 export const logTimestamp = () => {
   const timestamp = format(new Date(), "dd-MM-yyy HH:mm:ss");
@@ -25,6 +33,38 @@ export const getLatestMarketPrices = async (): Promise<CoinWithPrice[]> => {
     coinId: coin.coinId,
     price: coin.price,
   }));
+};
+
+export const getMarketPriceChangesTwentyFourHours = async (): Promise<
+  CoinWithChange[]
+> => {
+  const amountOfSupportedCoins = await countSupportedCoins();
+  const twentyFourHoursAgo = subHours(new Date(), 24);
+  const twentyFiveHoursAgo = subHours(new Date(), 25);
+  const latestMarketPrices = await getLatestMarketPrices();
+  const twentyFourHoursAgoMarketPrices =
+    await findMarketPricesBetweenDatesWithLimitSortedByDateDesc(
+      twentyFiveHoursAgo,
+      twentyFourHoursAgo,
+      amountOfSupportedCoins
+    );
+  const twentyFourHoursAgoCoinIds = twentyFourHoursAgoMarketPrices.map(
+    ({ coinId }) => coinId
+  );
+  return latestMarketPrices
+    .filter(({ coinId }) =>
+      // Don't attempt to calculate change for coins without data
+      twentyFourHoursAgoCoinIds.includes(coinId)
+    )
+    .map(({ coinId, price }) => ({
+      coinId,
+      change:
+        price /
+          twentyFourHoursAgoMarketPrices.find(
+            (marketPrice) => marketPrice.coinId === coinId
+          )!.price -
+        1,
+    }));
 };
 
 export const updateMarketPrices = async (): Promise<void> => {

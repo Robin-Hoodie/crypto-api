@@ -1,4 +1,4 @@
-import { MongoClient, Timestamp, WithId } from "mongodb";
+import { MongoClient, WithId } from "mongodb";
 import type { CoinId, CoinWithPrice } from "../types";
 import {
   MONGODB_ADMIN_USER,
@@ -6,7 +6,6 @@ import {
   MONGODB_HOST,
   MONGODB_PORT,
 } from "../config";
-import type { CoinsSyncedResponse } from "../types";
 
 const connectionString = `mongodb://${MONGODB_ADMIN_USER}:${MONGODB_ADMIN_PASSWORD}@${MONGODB_HOST}:${MONGODB_PORT}/?writeConcern=majority`;
 
@@ -17,7 +16,7 @@ interface SchemaSupportedCoin {
 interface SchemaHistoricalPrice {
   coinId: CoinId;
   price: number;
-  timestamp: Timestamp;
+  date: Date;
 }
 
 const mongoClient = new MongoClient(connectionString, {
@@ -47,6 +46,11 @@ export const findSupportedCoins = async (): Promise<
 > => {
   const collectionSupportedCoins = await getCollectionSupportedCoins();
   return await collectionSupportedCoins.find({}).toArray();
+};
+
+export const countSupportedCoins = async (): Promise<number> => {
+  const collectionSupportedCoins = await getCollectionSupportedCoins();
+  return await collectionSupportedCoins.countDocuments();
 };
 
 export const insertSupportedCoins = async (
@@ -95,7 +99,7 @@ export const insertMarketPrices = async (
 ): Promise<WithId<SchemaHistoricalPrice>[]> => {
   const documentsToInsert = coinsWithPrices.map((coinWithPrice) => ({
     ...coinWithPrice,
-    timestamp: Timestamp.ZERO,
+    date: new Date(),
   }));
 
   const collectionHistoricalPrices = await getCollectionHistoricalPrices();
@@ -122,8 +126,28 @@ export const findMarketPricesLatest = async (
       },
     })
     .sort({
-      timestamp: -1,
+      date: -1,
     })
     .limit(coinIds.length)
+    .toArray();
+};
+
+export const findMarketPricesBetweenDatesWithLimitSortedByDateDesc = async (
+  fromDate: Date,
+  toDate: Date,
+  limit: number
+): Promise<WithId<SchemaHistoricalPrice>[]> => {
+  const collectionHistoricalPrices = await getCollectionHistoricalPrices();
+  return await collectionHistoricalPrices
+    .find({
+      date: {
+        $lte: fromDate,
+        $gte: toDate,
+      },
+    })
+    .sort({
+      date: -1,
+    })
+    .limit(limit)
     .toArray();
 };

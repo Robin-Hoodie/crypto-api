@@ -3,6 +3,7 @@ import cron, { ScheduledTask } from "node-cron";
 import { SERVER_PORT, UPDATE_MARKET_PRICES_INTERVAL } from "./config";
 import {
   getLatestMarketPrices,
+  getMarketPriceChangesTwentyFourHours,
   getSupportedCoins,
   syncSupportedCoins,
   updateMarketPrices,
@@ -19,6 +20,16 @@ app.get("/ping", (_, res) => res.send("pong"));
 app.get("/market-prices", async (req, res) => {
   const marketPrices = await getLatestMarketPrices();
   return res.send(marketPrices);
+});
+
+app.get("/market-price-changes/twenty-four-hours", async (req, res) => {
+  const marketPriceChangesTwentyFourHours =
+    await getMarketPriceChangesTwentyFourHours();
+  return res.send(marketPriceChangesTwentyFourHours);
+});
+
+app.get("/market-price-changes/seven-days", async (req, res) => {
+  return res.send("Hello");
 });
 
 app.get("/supported-coins", async (req, res) => {

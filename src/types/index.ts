@@ -16,6 +16,11 @@ export interface CoinWithPrice {
   price: number;
 }
 
+export interface CoinWithChange {
+  coinId: CoinId;
+  change: number;
+}
+
 export interface CoinsSyncedResponse {
   coinsAdded: CoinId[];
   coinsRemoved: CoinId[];
