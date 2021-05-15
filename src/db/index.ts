@@ -79,6 +79,17 @@ export const deleteSupportedCoins = async (
   });
 };
 
+export const deleteHistoricalPricesForCoins = async (
+  coinIds: CoinId[]
+): Promise<void> => {
+  const collectionHistoricalPrices = await getCollectionHistoricalPrices();
+  await collectionHistoricalPrices.deleteMany({
+    coinId: {
+      $in: coinIds,
+    },
+  });
+};
+
 export const insertMarketPrices = async (
   coinsWithPrices: CoinWithPrice[]
 ): Promise<WithId<SchemaHistoricalPrice>[]> => {

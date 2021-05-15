@@ -61,6 +61,7 @@ export const syncSupportedCoins = async (
   }
   if (coinsToRemove.length) {
     await deleteSupportedCoins(coinsToRemove);
+    await deleteHistoricalPricesForCoins(coinsToRemove);
   }
   logWithTimestamp("Synchronizing supported coins: DONE");
   return {
