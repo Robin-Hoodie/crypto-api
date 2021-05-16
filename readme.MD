@@ -22,6 +22,34 @@ See https://docs.mongodb.com/manual/tutorial/enable-authentication/
 
 ## Compute Engine
 
-- The process is run via Supervisor
-- The application is run as the "nodeapp" user
-- See https://cloud.google.com/nodejs/getting-started/getting-started-on-compute-engine for more info
+### Setting up MongoDB
+
+After running the startup script, MongoDB should be readily installed
+
+Create admin user:
+
+```
+mongo
+use admin
+db.createUser(
+  {
+    user: "admin",
+    pwd: passwordPrompt(), // or cleartext password
+    roles: [ { role: "userAdminAnyDatabase", db: "admin" }, "readWriteAnyDatabase" ]
+  }
+)
+exit
+```
+
+After this, we need to require authentication to write to MongoDB by adding the following 2 lines to `/etc/mongod.conf`:
+
+```
+security:
+  authorization: enabled
+```
+
+Restart MongoDB: `systemctl restart mongod`
+
+### Run app w/ supervisor
+
+
